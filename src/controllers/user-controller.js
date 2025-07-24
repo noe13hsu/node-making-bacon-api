@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const pool = require('../db')
+const pool = require('../config/db')
 
 exports.login = async (req, res, next) => {
   const {email, password} = req.body
@@ -15,7 +15,7 @@ exports.login = async (req, res, next) => {
     const validPassword = await bcrypt.compare(password, user.password_hash)
 
     if (!validPassword) {
-        return res.status(401).json({message: 'Invalid email or password'})
+      return res.status(401).json({message: 'Invalid email or password'})
     }
 
     const payload = {email: user.email, id: user.id}
