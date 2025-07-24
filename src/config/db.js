@@ -1,12 +1,10 @@
-import pkg from 'pg'
-import dotenv from 'dotenv'
+const {Pool} = require('pg')
+const dotenv = require('dotenv')
 
 dotenv.config()
-
-const {Pool} = pkg
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL
 })
 
-export default pool
+module.exports = pool
