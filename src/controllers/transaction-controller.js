@@ -1,4 +1,4 @@
-import pool from '../config/db.js'
+const pool = require('../db')
 
 exports.getUserTransactions = async (req, res, next) => {
   try {
