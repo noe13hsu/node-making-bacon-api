@@ -4,6 +4,6 @@ const {verifyToken} = require('../middleware/auth-middleware')
 
 const router = express.Router()
 
-router.get('/transactions', verifyToken, getUserTransactions)
+router.get('/', verifyToken, getUserTransactions)
 
 module.exports = router
