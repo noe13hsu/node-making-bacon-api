@@ -61,7 +61,7 @@ exports.createUserTransaction = async (req, res, next) => {
     }
 
     const userId = parseInt(req.user.id, 10)
-    const result = await pool.query('SELECT id from categories WHERE id = $1 AND user_id = $2', [category_id, userId])
+    const result = await pool.query('SELECT id FROM categories WHERE id = $1 AND user_id = $2', [category_id, userId])
 
     // Make sure the category belongs to the user
     if (result.rowCount === 0) {
