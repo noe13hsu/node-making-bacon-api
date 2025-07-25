@@ -78,3 +78,58 @@ exports.createUserTransaction = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.updateUserTransaction = async (req, res, next) => {
+  try {
+    const {amount, category_id, date, description} = req.body
+
+    if (!amount || !category_id || !date || !description) {
+      return res.status(400).json({message: 'Missing required fields'})
+    }
+
+    const transactionId = parseInt(req.params.id, 10)
+
+    if (isNaN(transactionId)) {
+      return res.status(400).json({message: 'Invalid transaction id'})
+    }
+
+    const userId = parseInt(req.user.id, 10)
+
+    // Check that transaction exists and belongs to a category owned by the user
+    const transactionResult = await pool.query(
+      `SELECT t.id
+      FROM transactions t
+      JOIN categories c
+      ON t.category_id = c.id
+      WHERE t.id = $1 AND c.user_id = $2`,
+      [transactionId, userId]
+    )
+
+    if (transactionResult.rowCount === 0) {
+      return res.status(403).json({message: 'Transaction not found or access denied'})
+    }
+
+    // Check that the new category (if changed) also belongs to the user
+    const categoryResult = await pool.query(
+      `SELECT id
+      FROM categories
+      WHERE id = $1 AND user_id = $2`,
+      [category_id, userId]
+    )
+
+    if (categoryResult.rowCount === 0) {
+      return res.status(403).json({message: 'Category not found or access denied'})
+    }
+
+    await pool.query(
+      `UPDATE transactions
+      SET amount = $1, category_id = $2, date = $3, description = $4
+      WHERE id = $5`,
+      [amount, category_id, date, description, transactionId]
+    )
+
+    res.json({message: 'Transaction updated'})
+  } catch (error) {
+    next(error)
+  }
+}

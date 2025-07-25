@@ -1,10 +1,16 @@
 const express = require('express')
-const {createUserTransaction, getUserTransactions} = require('../controllers/transaction-controller')
 const {verifyToken} = require('../middleware/auth-middleware')
+
+const {
+    createUserTransaction,
+    getUserTransactions,
+    updateUserTransaction
+} = require('../controllers/transaction-controller')
 
 const router = express.Router()
 
 router.get('/', verifyToken, getUserTransactions)
 router.post('/', verifyToken, createUserTransaction)
+router.put('/:id', verifyToken, updateUserTransaction)
 
 module.exports = router
