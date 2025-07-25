@@ -3,6 +3,7 @@ const pool = require('../config/db')
 exports.getUserTransactions = async (req, res, next) => {
   try {
     const userId = parseInt(req.user.id, 10)
+    console.log('userId', userId)
     const page = req.query.page ? parseInt(req.query.page, 10) : 1
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
 
@@ -15,8 +16,34 @@ exports.getUserTransactions = async (req, res, next) => {
     }
 
     const offset = (page - 1) * limit
-    const transactions = await pool.query('SELECT * FROM transactions WHERE user_id = $1 LIMIT $2 OFFSET $3', [userId, limit, offset])
-    const count = await pool.query('SELECT COUNT(*) FROM transactions WHERE user_id = $1', [userId])
+    const transactions = await pool.query(
+      `SELECT
+        t.*,
+        c.description AS category_description,
+        c.type AS category_type
+      FROM
+        transactions t
+      JOIN
+        categories c
+      ON
+        t.category_id = c.id
+      WHERE
+        c.user_id = $1 LIMIT $2 OFFSET $3`,
+      [userId, limit, offset]
+    )
+    const count = await pool.query(
+      `SELECT
+        COUNT(*)
+      FROM
+        transactions t
+      JOIN
+        categories c
+      ON
+        t.category_id = c.id
+      WHERE
+        c.user_id = $1`,
+      [userId]
+    )
     const total = parseInt(count.rows[0].count, 10)
 
     res.json({data: transactions.rows, limit, page, total})
