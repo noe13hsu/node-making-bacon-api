@@ -1,4 +1,3 @@
-const { parse } = require('dotenv')
 const pool = require('../config/db')
 
 exports.getUserTransactions = async (req, res, next) => {
