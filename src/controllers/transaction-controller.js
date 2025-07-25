@@ -57,7 +57,7 @@ exports.createUserTransaction = async (req, res, next) => {
     const {amount, category_id, date, description} = req.body
 
     if (!amount || !category_id || !date || !description) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ message: 'Missing required fields' })
     }
 
     const userId = parseInt(req.user.id, 10)
