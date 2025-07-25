@@ -3,7 +3,6 @@ const pool = require('../config/db')
 exports.getUserTransactions = async (req, res, next) => {
   try {
     const userId = parseInt(req.user.id, 10)
-    console.log('userId', userId)
     const page = req.query.page ? parseInt(req.query.page, 10) : 1
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
 
