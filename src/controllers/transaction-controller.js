@@ -17,31 +17,21 @@ exports.getUserTransactions = async (req, res, next) => {
 
     const offset = (page - 1) * limit
     const transactions = await pool.query(
-      `SELECT
-        t.*,
-        c.description AS category_description,
-        c.type AS category_type
-      FROM
-        transactions t
-      JOIN
-        categories c
-      ON
-        t.category_id = c.id
-      WHERE
-        c.user_id = $1 LIMIT $2 OFFSET $3`,
+      `SELECT t.*, c.description AS category_description, c.type AS category_type
+      FROM transactions t
+      JOIN categories c
+      ON t.category_id = c.id
+      WHERE c.user_id = $1
+      LIMIT $2
+      OFFSET $3`,
       [userId, limit, offset]
     )
     const count = await pool.query(
-      `SELECT
-        COUNT(*)
-      FROM
-        transactions t
-      JOIN
-        categories c
-      ON
-        t.category_id = c.id
-      WHERE
-        c.user_id = $1`,
+      `SELECT COUNT(*)
+      FROM transactions t
+      JOIN categories c
+      ON t.category_id = c.id
+      WHERE c.user_id = $1`,
       [userId]
     )
     const total = parseInt(count.rows[0].count, 10)
