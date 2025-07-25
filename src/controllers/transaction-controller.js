@@ -8,11 +8,11 @@ exports.getUserTransactions = async (req, res, next) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
 
     if (isNaN(page) || page < 1) {
-      return res.status(400).json({ message: 'Invalid page number' })
+      return res.status(400).json({message: 'Invalid page number'})
     }
 
     if (isNaN(limit) || limit < 1) {
-      return res.status(400).json({ message: 'Invalid limit number' })
+      return res.status(400).json({message: 'Invalid limit number'})
     }
 
     const offset = (page - 1) * limit
@@ -57,7 +57,7 @@ exports.createUserTransaction = async (req, res, next) => {
     const {amount, category_id, date, description} = req.body
 
     if (!amount || !category_id || !date || !description) {
-      return res.status(400).json({ message: 'Missing required fields' })
+      return res.status(400).json({message: 'Missing required fields'})
     }
 
     const userId = parseInt(req.user.id, 10)
