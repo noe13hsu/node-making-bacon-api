@@ -95,7 +95,7 @@ exports.updateUserTransaction = async (req, res, next) => {
     )
 
     if (transactionResult.rowCount === 0) {
-      return res.status(403).json({message: 'Transaction not found or access denied'})
+      return res.status(404).json({message: 'Transaction not found or access denied'})
     }
 
     // Check that the new category (if changed) also belongs to the user
@@ -107,7 +107,7 @@ exports.updateUserTransaction = async (req, res, next) => {
     )
 
     if (categoryResult.rowCount === 0) {
-      return res.status(403).json({message: 'Category not found or access denied'})
+      return res.status(404).json({message: 'Category not found or access denied'})
     }
 
     await pool.query(
