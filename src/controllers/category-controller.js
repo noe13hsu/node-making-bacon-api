@@ -55,7 +55,10 @@ exports.createUserCategory = async (req, res, next) => {
       return res.status(400).json({message: 'Category already exists'})
     }
 
-    await pool.query('INSERT INTO categories (description, user_id, type) VALUES ($1, $2, $3)', [capitalizedDescription, userId, type])
+    await pool.query(
+      'INSERT INTO categories (description, user_id, type) VALUES ($1, $2, $3)',
+      [capitalizedDescription, userId, type]
+    )
 
     res.status(201).json({message: 'Category created'})
   } catch (error) {
