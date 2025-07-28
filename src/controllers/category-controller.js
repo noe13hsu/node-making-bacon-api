@@ -1,4 +1,5 @@
 const pool = require('../config/db')
+const { capitalizeFirstLetter } = require('../utils')
 
 exports.getUserCategories = async (req, res, next) => {
   try {
@@ -28,6 +29,36 @@ exports.getUserCategories = async (req, res, next) => {
     const total = parseInt(countResult.rows[0].count, 10)
 
     res.json({data: categoryResult.rows, limit, page, total})
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+exports.createUserCategory = async (req, res, next) => {
+  try {
+    const {description, type} = req.body
+
+    if (!description || !type) {
+      return res.status(400).json({message: 'Missing required fields'})
+    }
+
+    const capitalizedDescription = capitalizeFirstLetter(description)
+    const userId = parseInt(req.user.id, 10)
+    const categoryResult = await pool.query(
+      `SELECT id
+      FROM categories
+      WHERE description = $1 AND user_id = $2 AND type = $3`,
+      [capitalizedDescription, userId, type]
+    )
+
+    if (categoryResult.rowCount > 0) {
+      return res.status(400).json({message: 'Category already exists'})
+    }
+
+    await pool.query('INSERT INTO categories (description, user_id, type) VALUES ($1, $2, $3)', [capitalizedDescription, userId, type])
+
+    res.status(201).json({message: 'Category created'})
   } catch (error) {
     next(error)
   }
