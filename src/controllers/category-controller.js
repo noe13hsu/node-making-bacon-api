@@ -96,7 +96,7 @@ exports.updateUserCategory = async (req, res, next) => {
     }
 
     await pool.query(
-      'UPDATE categories SET description = $1, type = $2 WHERE user_id = $3 AND id = $4',
+      'UPDATE categories SET description = $1, type = $2, updated_at = CURRENT_TIMESTAMP WHERE user_id = $3 AND id = $4',
       [capitalizedDescription, type, userId, categoryId]
     )
 

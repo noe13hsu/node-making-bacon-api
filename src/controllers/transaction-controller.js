@@ -113,7 +113,7 @@ exports.updateUserTransaction = async (req, res, next) => {
 
     await pool.query(
       `UPDATE transactions
-      SET amount = $1, category_id = $2, date = $3, description = $4
+      SET amount = $1, category_id = $2, date = $3, description = $4, updated_at = CURRENT_TIMESTAMP
       WHERE id = $5`,
       [amount, category_id, date, description, transactionId]
     )
