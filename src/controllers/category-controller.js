@@ -105,3 +105,24 @@ exports.updateUserCategory = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.deleteUserCategory = async (req, res, next) => {
+  try {
+    const categoryId = parseInt(req.params.id, 10)
+    const userId = parseInt(req.user.id, 10)
+    const categoryResult = await pool.query(
+      'SELECT id FROM categories WHERE id = $1 AND user_id = $2',
+      [categoryId, userId]
+    )
+
+    if (categoryResult.rowCount === 0) {
+      return res.status(404).json({message: 'Category not found or access denied'})
+    }
+
+    await pool.query('DELETE FROM categories WHERE id = $1 AND user_id = $2', [categoryId, userId])
+
+    res.json({message: 'Category deleted'})
+  } catch (error) {
+    next(error)
+  }
+}
