@@ -34,7 +34,6 @@ exports.getUserCategories = async (req, res, next) => {
   }
 }
 
-
 exports.createUserCategory = async (req, res, next) => {
   try {
     const {description, type} = req.body
