@@ -65,3 +65,43 @@ exports.createUserCategory = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.updateUserCategory = async (req, res, next) => {
+  try {
+    const {description, type} = req.body
+    const trimmedDescription = description.trim()
+
+    if (!trimmedDescription || !type) {
+      return res.status(400).json({message: 'Missing required fields'})
+    }
+
+    const userId = parseInt(req.user.id, 10)
+    const categoryId = parseInt(req.params.id, 10)
+    const categoryResult = await pool.query('SELECT id FROM categories WHERE id = $1 and user_id = $2', [categoryId, userId])
+
+    if (categoryResult.rowCount === 0) {
+      return res.status(404).json({message: 'Category not found or access denied'})
+    }
+
+    const capitalizedDescription = capitalizeFirstLetter(trimmedDescription)
+
+    // without id <> $3 this query will also match itself
+    const duplicateResult = await pool.query(
+      'SELECT id FROM categories WHERE description = $1 AND user_id = $2 AND id <> $3',
+      [capitalizedDescription, userId, categoryId]
+    )
+
+    if (duplicateResult.rowCount > 0) {
+      return res.status(400).json({message: 'Category with this description already exists'})
+    }
+
+    await pool.query(
+      'UPDATE categories SET description = $1, type = $2 WHERE user_id = $3 AND id = $4',
+      [capitalizedDescription, type, userId, categoryId]
+    )
+
+    res.json({message: 'Category updated'})
+  } catch (error) {
+    next(error)
+  }
+}
