@@ -122,3 +122,34 @@ exports.updateUserTransaction = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.deleteUserTransaction = async (req, res, next) => {
+  try {
+    const transactionId = parseInt(req.params.id, 10)
+
+    if (isNaN(transactionId)) {
+      return res.status(400).json({message: 'Invalid transaction id'})
+    }
+
+    const userId = parseInt(req.user.id)
+
+    const transactionResult = await pool.query(
+      `SELECT t.id
+      FROM transactions t
+      JOIN categories c
+      ON t.category_id = c.id
+      WHERE t.id = $1 AND c.user_id = $2`,
+      [transactionId, userId]
+    )
+
+    if (transactionResult.rowCount === 0) {
+      return res.status(404).json({message: 'Transaction not found or access denied'})
+    }
+
+    await pool.query('DELETE FROM transactions WHERE id = $1', [transactionId])
+
+    res.json({message: 'Transaction deleted'})
+  } catch (error) {
+    next(error)
+  }
+}
