@@ -85,7 +85,7 @@ exports.updateUserCategory = async (req, res, next) => {
 
     const capitalizedDescription = capitalizeFirstLetter(trimmedDescription)
 
-    // without id <> $3 this query will also match itself
+    // Without id <> $3 this query will also match itself
     const duplicateResult = await pool.query(
       'SELECT id FROM categories WHERE description = $1 AND user_id = $2 AND id <> $3',
       [capitalizedDescription, userId, categoryId]
