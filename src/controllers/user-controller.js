@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const pool = require('../config/db')
+const {ONE_HOUR} = require('../constants')
 
 exports.login = async (req, res, next) => {
   const {email, password} = req.body
