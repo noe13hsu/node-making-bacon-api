@@ -21,10 +21,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/user', userRoutes)
-app.use('/transactions', transactionRoutes)
-app.use('/categories', categoryRoutes)
-app.use('/budget', budgetRoutes)
+app.use('/api/user', userRoutes)
+app.use('/api/transactions', transactionRoutes)
+app.use('/api/categories', categoryRoutes)
+app.use('/api/budget', budgetRoutes)
 
 
 module.exports = app
