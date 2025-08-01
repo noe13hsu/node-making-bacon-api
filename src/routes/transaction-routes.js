@@ -2,10 +2,10 @@ const express = require('express')
 const {verifyToken} = require('../middleware/auth-middleware')
 
 const {
-    createUserTransaction,
-    deleteUserTransaction,
-    getUserTransactions,
-    updateUserTransaction,
+  createUserTransaction,
+  deleteUserTransaction,
+  getUserTransactions,
+  updateUserTransaction,
 } = require('../controllers/transaction-controller')
 
 const router = express.Router()

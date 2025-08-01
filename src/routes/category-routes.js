@@ -1,11 +1,11 @@
 const express = require('express')
-const { verifyToken } = require('../middleware/auth-middleware')
+const {verifyToken} = require('../middleware/auth-middleware')
 
 const {
-    createUserCategory,
-    deleteUserCategory,
-    getUserCategories,
-    updateUserCategory,
+  createUserCategory,
+  deleteUserCategory,
+  getUserCategories,
+  updateUserCategory,
 } = require('../controllers/category-controller')
 
 const router = express.Router()

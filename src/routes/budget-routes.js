@@ -1,6 +1,6 @@
 const express = require('express')
-const { verifyToken } = require('../middleware/auth-middleware')
-const { getUserBudget, updateUserBudget } = require('../controllers/budget-controller')
+const {verifyToken} = require('../middleware/auth-middleware')
+const {getUserBudget, updateUserBudget} = require('../controllers/budget-controller')
 
 const router = express.Router()
 

@@ -1,5 +1,5 @@
 const pool = require('../config/db')
-const { capitalizeFirstLetter } = require('../utils')
+const {capitalizeFirstLetter} = require('../utils')
 
 exports.getUserCategories = async (req, res, next) => {
   try {
