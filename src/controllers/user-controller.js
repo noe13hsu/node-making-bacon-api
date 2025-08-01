@@ -35,6 +35,11 @@ exports.login = async (req, res, next) => {
   }
 }
 
+exports.logout = (_, res) => {
+  res.clearCookie('token')
+  res.json({message: 'Logged out'})
+}
+
 exports.register = async (req, res, next) => {
   try {
     const {email, password} = req.body
