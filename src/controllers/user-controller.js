@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const pool = require('../config/db')
-const {ONE_HOUR} = require('../constants')
+const {setAuthCookie} = require('../utils/auth')
 
 exports.login = async (req, res, next) => {
   const {email, password} = req.body
@@ -20,15 +19,7 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({message: 'Invalid email or password'})
     }
 
-    const payload = {email: user.email, id: user.id}
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'})
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: ONE_HOUR,
-      sameSite: 'Lax', // Helps prevent CSRF
-      secure: process.env.NODE_ENV === 'production',
-    })
+    setAuthCookie(res, user)
 
     res.json({ message: 'Login successful' })
   } catch (error) {
@@ -59,15 +50,7 @@ exports.register = async (req, res, next) => {
     )
 
     const newUser = resultNewUser.rows[0]
-    const payload = {email: newUser.email, id: newUser.id}
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'})
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: ONE_HOUR,
-      sameSite: 'Lax', // Helps prevent CSRF
-      secure: process.env.NODE_ENV === 'production',
-    })
+    setAuthCookie(res, newUser)
 
     res.status(201).json({message: 'User created'})
   } catch (error) {
