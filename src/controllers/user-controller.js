@@ -53,7 +53,21 @@ exports.register = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    await pool.query('INSERT INTO users (email, password_hash) VALUES ($1, $2)', [email, hashedPassword])
+    const resultNewUser = await pool.query(
+      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email',
+      [email, hashedPassword]
+    )
+
+    const newUser = resultNewUser.rows[0]
+    const payload = {email: newUser.email, id: newUser.id}
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: '1h'})
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: ONE_HOUR,
+      sameSite: 'Lax', // Helps prevent CSRF
+      secure: process.env.NODE_ENV === 'production',
+    })
 
     res.status(201).json({message: 'User created'})
   } catch (error) {
