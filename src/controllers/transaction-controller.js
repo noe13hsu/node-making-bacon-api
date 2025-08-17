@@ -43,6 +43,50 @@ exports.getUserTransactions = async (req, res, next) => {
   }
 }
 
+exports.getUserRecentTransactions = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.user.id, 10)
+    console.log('req.query.limit', req.query.limit)
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 10
+
+    if (isNaN(limit) || limit < 1) {
+      return res.status(400).json({message: 'Invalid limit number'})
+    }
+
+    const query = `
+      (
+        SELECT t.id, t.description, t.amount, t.date, c.description AS category, c.type
+        FROM transactions t
+        JOIN categories c ON t.category_id = c.id
+        WHERE c.user_id = $1
+          AND c.type = 'income'
+          AND DATE_TRUNC('month', t.date) = DATE_TRUNC('month', CURRENT_DATE)
+        ORDER BY t.date DESC
+        LIMIT $2
+      )
+      UNION ALL
+      (
+        SELECT t.id, t.description, t.amount, t.date, c.description AS category, c.type
+        FROM transactions t
+        JOIN categories c ON t.category_id = c.id
+        WHERE c.user_id = $1
+          AND c.type = 'expense'
+          AND DATE_TRUNC('month', t.date) = DATE_TRUNC('month', CURRENT_DATE)
+        ORDER BY t.date DESC
+        LIMIT $2
+      )
+    `
+
+    const { rows } = await pool.query(query, [userId, limit])
+    const income = rows.filter(r => r.type === "income")
+    const expense = rows.filter(r => r.type === "expense")
+
+    res.json({income, expense})
+  } catch (error) {
+    next(error)
+  }
+}
+
 exports.createUserTransaction = async (req, res, next) => {
   try {
     const {amount, category_id, date, description} = req.body
